@@ -1,16 +1,19 @@
 const express = require('express');
 const morgan = require('morgan');
 const dotenv = require('dotenv');
+const cookieParser = require('cookie-parser');
 const routes = require('./routes/routes');
 const connectDB = require('./config/db');
 
 dotenv.config({ path: './config/config.env' });
 connectDB();
+
 const app = express();
+
 app.use(morgan('combined'));
-app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use('/', routes);
+app.use(cookieParser());
+app.use(routes);
 
 const PORT = process.env.PORT || 5000;
 

@@ -1,26 +1,32 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useContext } from 'react';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 
-function App() {
+import Cakes from './components/Cakes/Cakes';
+import Signup from './components/Signup/Signup';
+import Login from './components/Login/Login';
+import Home from './components/Home/Home';
+import ProtectedRoutes from './components/ProtectedRoutes/ProtectedRoutes';
+import ProtectedLogin from './components/ProtectedRoutes/ProtectedLogin';
+import AuthApi from './AuthApi';
+
+const App = () => {
+  const [auth, setAuth] = useState(false);
+  const Auth = useContext(AuthApi);
+  console.log(Auth);
+
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <AuthApi.Provider value={{ auth, setAuth }}>
+      <Router>
+        <Switch>
+          <Route exact path="/" component={Home} />
+          <ProtectedRoutes exact path="/cakes" auth={Auth.auth} component={Cakes} />
+          <Route exact path="/signup" component={Signup} />
+          <ProtectedLogin exact path="/login" auth={Auth.auth} component={Login} />
+        </Switch>
+      </Router>
+    </AuthApi.Provider>
   );
-}
+};
 
 export default App;

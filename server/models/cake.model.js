@@ -1,6 +1,6 @@
 var mongoose = require('mongoose');
 
-var CakesSchema = new mongoose.Schema({
+var CakeSchema = new mongoose.Schema({
   name: {
     type: String,
     required: [true, 'Please add name']
@@ -11,7 +11,7 @@ var CakesSchema = new mongoose.Schema({
   },
   image: {
     type: String,
-    required: [true, 'Please add image url']
+    required: [true, 'Please add image']
   },
   createdAt: {
     type: Date,
@@ -19,4 +19,4 @@ var CakesSchema = new mongoose.Schema({
   }
 });
 
-module.exports = mongoose.model('Cakes', CakesSchema);
+module.exports = mongoose.model('Cake', CakeSchema);

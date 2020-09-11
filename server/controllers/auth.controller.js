@@ -1,80 +1,38 @@
-const UserSchema = require('../models/user.model');
+const User = require('../models/user.model');
+const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
-const createToken = (id) => {
-  return jwt.sign({ id }, 'cakes secret', {
-    expiresIn: 36000
-  });
-};
-
-const handleErrors = (err) => {
-  let errors = { email: '', password: '' };
-
-  if (err.message === 'Inncorrect Email 🧐') {
-    errors.email = 'That email is not registered!';
-  }
-
-  if (err.message === 'Inncorrect Password 🧐') {
-    errors.password = 'That password is not incorrect! 🤭';
-  }
-
-
-  if (err.code === 11000) {
-    errors.email = 'That email is already registered! 🤭';
-    return errors;
-  }
-
-  if (err.message.includes('user validation failed')) {
-    Object.values(err.errors).forEach(({ properties }) => {
-      errors[properties.path] = properties.message;
-    });
-  }
-
-  return errors;
-};
-
-const getSignup = async (req, res) => {
-  res.send('signup');
-};
-
-const getLogin = async (req, res) => {
-  res.send('login');
-};
-
-const postSignup = async (req, res) => {
-  const { email, password } = req.body;
+const postAuth = async (req, res) => {
   try {
-    const user = await UserSchema.create({ email, password });
+    const { email, password } = req.body;
 
-    const token = createToken(user._id);
-    res.cookie('jwt', token, { httpOnly: true, maxAge: 3600 * 1000 });
+    if (!email || !password) {
+      return res.status(400).json({ msg: 'Please enter all fields' });
+    }
 
-    res.status(201).json({
-      success: true,
-      data: user._id
+    const user = await User.findOne({ email });
+
+    if (!user) res.status(400).json({ msg: 'User Does Not Exist 😞' });
+
+    const hashed = await bcrypt.compare(password, user.password);
+
+    if (!hashed) res.status(400).json({ msg: 'Invalid Credentials 😅' });
+
+    jwt.sign({ id: user.id }, process.env.jwtSecret, { expiresIn: 3600 }, (err, token) => {
+      if (err) throw err;
+
+      res.status(200).json({
+        token,
+        user: {
+          id: user.id,
+          email: user.email
+        }
+      });
     });
-  } catch (err) {
-    const errors = handleErrors(err);
 
-    res.status(400).json({ errors });
+  } catch (err) {
+    return res.status(400).json({ err });
   }
 };
 
-const postLogin = async (req, res) => {
-  const { email, password } = req.body;
-
-  try {
-    const user = await UserSchema.login(email, password);
-
-    const token = createToken(user._id);
-    res.cookie('jwt', token, { httpOnly: true, maxAge: 3600 * 1000 });
-
-    res.status(200).json({ user: user._id });
-  } catch (err) {
-    const errors = handleErrors(err);
-
-    res.status(400).json({ errors });
-  }
-};
-
-module.exports = { getSignup, getLogin, postSignup, postLogin };
+module.exports = { postAuth };

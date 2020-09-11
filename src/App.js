@@ -1,31 +1,61 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import axios from 'axios';
+import { CakesProvider } from './context/cakes/cakesContext';
+import userContext from './context/user/userContext';
 
 import Cakes from './components/Cakes/Cakes';
 import Signup from './components/Signup/Signup';
 import Login from './components/Login/Login';
 import Home from './components/Home/Home';
-import ProtectedRoutes from './components/ProtectedRoutes/ProtectedRoutes';
-import ProtectedLogin from './components/ProtectedRoutes/ProtectedLogin';
-import AuthApi from './AuthApi';
 
 const App = () => {
-  const [auth, setAuth] = useState(false);
-  const Auth = useContext(AuthApi);
-  console.log(Auth);
+  const [userData, setUserData] = useState({
+    token: null,
+    user: null
+  });
 
+  useEffect(() => {
+    const checkLoggedIn = async () => {
+      let token = localStorage.getItem('token');
+
+      if (token === null) {
+        localStorage.setItem('token', "");
+        token = "";
+      }
+
+      const tokenRes = await axios.post('/users/tokenIsValid', null, {
+        headers: {
+          "x-auth-token": token
+        }
+      });
+
+      if (tokenRes.data) {
+        const userRes = await axios.get('/users', { headers: { "x-auth-token": token } });
+
+        setUserData({
+          token,
+          user: userRes.data
+        });
+      }
+    };
+
+    checkLoggedIn();
+  }, []);
 
   return (
-    <AuthApi.Provider value={{ auth, setAuth }}>
-      <Router>
-        <Switch>
-          <Route exact path="/" component={Home} />
-          <ProtectedRoutes exact path="/cakes" auth={Auth.auth} component={Cakes} />
-          <Route exact path="/signup" component={Signup} />
-          <ProtectedLogin exact path="/login" auth={Auth.auth} component={Login} />
-        </Switch>
-      </Router>
-    </AuthApi.Provider>
+    <Router>
+      <userContext.Provider value={{ userData, setUserData }}>
+        <CakesProvider>
+          <Switch>
+            <Route exact path="/" component={Home} />
+            <Route exact path="/cakes" component={Cakes} />
+            <Route exact path="/signup" component={Signup} />
+            <Route exact path="/login" component={Login} />
+          </Switch>
+        </CakesProvider>
+      </userContext.Provider>
+    </Router>
   );
 };
 

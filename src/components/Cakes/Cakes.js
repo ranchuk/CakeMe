@@ -1,14 +1,21 @@
-import React, { useEffect } from 'react';
-import axios from 'axios';
+import React, { useContext, useEffect } from 'react';
+import { CakesContext } from '../../context/cakes/cakesContext';
+import userContext from '../../context/user/userContext';
 
 const Cakes = () => {
+  const { userData } = useContext(userContext);
+
+  const { cakes, getCakes } = useContext(CakesContext);
+
+
+
+
   useEffect(() => {
-    async function fetchCakes() {
-      const res = await axios.get('/cakes');
-      console.log(res.data);
-    }
-    fetchCakes();
+
+    getCakes();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
 
   return (
     <div>

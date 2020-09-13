@@ -1,34 +1,125 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+import React, { useState, useContext } from "react";
+import axios from "axios";
 
-const Login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+import Container from "@material-ui/core/Container";
+import Typography from "@material-ui/core/Typography";
+import Paper from "@material-ui/core/Paper";
+import { makeStyles } from "@material-ui/core/styles";
+import TextField from "@material-ui/core/TextField";
+import Button from "@material-ui/core/Button";
+
+import Header from "../Header/Header";
+
+import UserContext from '../../context/user/userContext';
+
+const useStyles = makeStyles((theme) => ({
+  root: {
+    display: "grid",
+    placeItems: "center",
+  },
+  paper: {
+    maxWidth: "80%",
+    display: "grid",
+    placeItems: "center",
+    padding: theme.spacing(4),
+    position: "relative",
+    top: "-88px",
+  },
+  form: {
+    display: "flex",
+    flexDirection: "column",
+  },
+  input: {
+    marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(2),
+  },
+  button: {
+    marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(2),
+  },
+  title: {
+    color: "#1F2041",
+  },
+  signup: {
+    display: "flex",
+    width: '100%'
+  }
+}));
+
+const Login = (props) => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const { setUserData } = useContext(UserContext);
+  const classes = useStyles();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const res = await axios.post('/login', {
+      const loginRes = await axios.post("/users/login", {
         email,
-        password
+        password,
       });
+
+      setUserData({
+        token: loginRes.data.token,
+        user: loginRes.data.user
+      });
+
+      localStorage.setItem('token', loginRes.data.token);
+      props.history.push('/cakes');
     } catch (err) {
       console.log(err);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h2>Login</h2>
-      <label htmlFor="email">Email</label>
-      <input onChange={(e) => setEmail(e.target.value)} value={email} type="email" name="email" id="email" required />
+    <>
+      <Header />
+      <Container className={classes.root}>
+        <Paper elevation={3} className={classes.paper}>
+          <form className={classes.form} onSubmit={handleSubmit}>
+            <Typography className={classes.title} variant="h4" gutterBottom>
+              Login
+            </Typography>
+            <TextField
+              className={classes.input}
+              type="email"
+              name="email"
+              onChange={(e) => setEmail(e.target.value)}
+              value={email}
+              label="Email"
+              variant="outlined"
+              required
+            />
+            <TextField
+              className={classes.input}
+              type="password"
+              name="password"
+              onChange={(e) => setPassword(e.target.value)}
+              value={password}
+              label="Password"
+              variant="outlined"
+              required
+            />
+            <Button
+              className={classes.button}
+              type="submit"
+              variant="contained"
+              color="primary"
+            >
+              Login
+            </Button>
+          </form>
 
-      <label htmlFor="password">Password</label>
-      <input onChange={(e) => setPassword(e.target.value)} value={password} type="password" name="password" id="password" required />
-
-      <button type="submit">Lgin</button>
-    </form>
+          <div className={classes.signup}>
+            <Button variant="outlined" color="primary" href="/signup">
+              Signup
+          </Button>
+          </div>
+        </Paper>
+      </Container>
+    </>
   );
 };
 

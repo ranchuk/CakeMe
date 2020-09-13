@@ -7,7 +7,6 @@ import userContext from './context/user/userContext';
 import Cakes from './components/Cakes/Cakes';
 import Signup from './components/Signup/Signup';
 import Login from './components/Login/Login';
-import Home from './components/Home/Home';
 
 const App = () => {
   const [userData, setUserData] = useState({
@@ -48,10 +47,9 @@ const App = () => {
       <userContext.Provider value={{ userData, setUserData }}>
         <CakesProvider>
           <Switch>
-            <Route exact path="/" component={Home} />
-            <Route exact path="/cakes" component={Cakes} />
+            <Route exact path="/" component={Login} />
             <Route exact path="/signup" component={Signup} />
-            <Route exact path="/login" component={Login} />
+            <Route exact path="/cakes" component={Cakes} />
           </Switch>
         </CakesProvider>
       </userContext.Provider>

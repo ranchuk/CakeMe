@@ -7,6 +7,7 @@ import userContext from './context/user/userContext';
 import Cakes from './components/Cakes/Cakes';
 import Signup from './components/Signup/Signup';
 import Login from './components/Login/Login';
+import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
 
 const App = () => {
   const [userData, setUserData] = useState({
@@ -49,7 +50,7 @@ const App = () => {
           <Switch>
             <Route exact path="/" component={Login} />
             <Route exact path="/signup" component={Signup} />
-            <Route exact path="/cakes" component={Cakes} />
+            <ProtectedRoute exact path="/cakes" userData={userData} component={Cakes} />
           </Switch>
         </CakesProvider>
       </userContext.Provider>

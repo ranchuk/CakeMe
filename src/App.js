@@ -14,9 +14,9 @@ const App = () => {
       <UserProvider>
         <CakesProvider>
           <Switch>
-            <Route exact path="/" component={Login} />
-            <Route exact path="/signup" component={Signup} />
-            <ProtectedRoute exact path="/cakes" component={Cakes} />
+            <Route exact path='/' component={Cakes} />
+            <Route exact path='/signup' component={Signup} />
+            <ProtectedRoute exact path='/login' component={Login} />
           </Switch>
         </CakesProvider>
       </UserProvider>

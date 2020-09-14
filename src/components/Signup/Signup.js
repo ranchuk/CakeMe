@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import axios from 'axios';
-import UserContext from '../../context/user/userContext';
+import { UserContext } from '../../context/user/userContext';
 
 import Container from "@material-ui/core/Container";
 import Typography from "@material-ui/core/Typography";

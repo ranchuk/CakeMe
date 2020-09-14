@@ -1,10 +1,12 @@
 import React, { useContext, useEffect } from 'react';
 
-import { CakesContext } from '../../context/cakes/cakesContext';
-import userContext from '../../context/user/userContext';
+import NavBar from '../NavBar/NavBar';
 
-const Cakes = (props) => {
-  const { userData } = useContext(userContext);
+import { CakesContext } from '../../context/cakes/cakesContext';
+import { UserContext } from '../../context/user/userContext';
+
+const Cakes = () => {
+  const { user } = useContext(UserContext);
   const { cakes, getCakes } = useContext(CakesContext);
 
   useEffect(() => {
@@ -13,9 +15,9 @@ const Cakes = (props) => {
   }, []);
 
   return (
-    <div>
+    <NavBar>
       Cakes
-    </div>
+    </NavBar>
   );
 };
 

@@ -10,7 +10,7 @@ import Button from "@material-ui/core/Button";
 
 import Header from "../Header/Header";
 
-import UserContext from '../../context/user/userContext';
+import { UserContext } from '../../context/user/userContext';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -49,8 +49,8 @@ const useStyles = makeStyles((theme) => ({
 const Login = (props) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { setUserData } = useContext(UserContext);
   const classes = useStyles();
+  const { setUserData } = useContext(UserContext);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -61,12 +61,13 @@ const Login = (props) => {
         password,
       });
 
+      localStorage.setItem('token', loginRes.data.token);
+
       setUserData({
         token: loginRes.data.token,
         user: loginRes.data.user
       });
 
-      localStorage.setItem('token', loginRes.data.token);
       props.history.push('/cakes');
     } catch (err) {
       console.log(err);
